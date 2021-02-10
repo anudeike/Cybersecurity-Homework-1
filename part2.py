@@ -4,12 +4,12 @@
 1. Pick 2 Prime Numbers
 ie: p = 2, q = 7
 
-2. Find the modulus number or Big N 
+2. Find the modulus number or Big N
 N = p * q = 2 * 7 = 14
 N = 14
 
 3. Find phi(N) = (p-1)(q-1)
-This number gives the amount of numbers that are coprime to N 
+This number gives the amount of numbers that are coprime to N
 phi(14) = 6
 
 4. Find the encryption number e, given the following
@@ -31,48 +31,75 @@ import numpy as np
 def isprime(n):
     return re.compile(r'^1?$|^(11+)\1+$').match('1' * n) is None
 
-# for getting a single number 
+
+# for getting a single number
 def get_prime_number(high, low):
-  primes = [x for x in range(high, low) if isprime(x)]
-  return primes[-1]
+    primes = [x for x in range(high, low) if isprime(x)]
+    return primes[-1]
+
 
 # for getting ranges
 def get_prime_number_range(high, low):
-  primes = [x for x in range(high, low) if isprime(x)]
-  return primes
+    primes = [x for x in range(high, low) if isprime(x)]
+    return primes
+
 
 def phi(p, q):
-  return (p - 1) * (q - 1)
+    return (p - 1) * (q - 1)
+
 
 def compute_encryption_number(phi_N, N):
-  # 1 < e < phi_N
-  # if it is prime then it must necessarily be prime with both numbers
-  # (that is not necessarily true --> but it might work)
-  valid_range = get_prime_number_range(1, phi_N)
-  return valid_range[-1]
+    # 1 < e < phi_N
+    # if it is prime then it must necessarily be prime with both numbers
+    # (that is not necessarily true --> but it might work)
+    valid_range = get_prime_number_range(1, phi_N)
+    return valid_range[-1]
+
 
 def compute_decryption_number(e, phi_N):
-  # since e * n (mod phi_N) = 1
-  # simply pick a random number = n, and multiply by e, then subtract 1
+    # since e * n (mod phi_N) = 1
+    # simply pick a random number = n, and multiply by e, then subtract 1
 
-  # can be a random number
-  n = np.random.randint(100)
+    # can be a random number
+    n = np.random.randint(100)
 
-  d = (phi_N * n) - 1
+    d = (phi_N * n) - 1
+
+    # verify that it works
+    one = (e * d) % phi_N
+
+    # its can't work if it doesn't have the criteria
+    if one != 1:
+        raise ValueError("This decryption value will not work.")
+
+    return d
 
 
-  # verify that it works
-  one = (e * d) % phi_N
+def encrypt_msg(public_lock_tuple, msg):
+    # get the numbers
+    encryption_number = public_lock_tuple[0]
+    modulus = public_lock_tuple[1]
 
-  # its can't work if it doesn't have the criteria
-  if one != 1:
-    raise ValueError("This decryption value will not work.")
+    # get the char array and raise to the power of the encryption_number and then modulus
+    encrypted_msg = [chr((ord(x) ** encryption_number) % modulus) for x in list(msg)]
 
-  return d
+    return "".join(encrypted_msg)
+
+
+def decrypt_msg(private_key_tuple, msg):
+    # get the numbers
+    decryption_number = private_key_tuple[0]
+    modulus = private_key_tuple[1]
+
+    # get the char array and raise to the power of the encryption_number and then modulus
+    decrypted_msg = [chr((ord(x) ** decryption_number) % modulus) for x in list(msg)]
+
+    return "".join(decrypted_msg)
+
 
 # first step is to pick two prime numbers
-p = 2
-q = 7
+p = 11
+q = 19
 
 # find the modulus number
 N = p * q
@@ -94,7 +121,15 @@ print(f'private_key: {private_keys}')
 # checking encryption and decryption
 message = "Hi! Cybersecurity is fun, especially all of the modular arthmetic!"
 
+print(f'\nOriginal Message: {message}')
 
+# encypt the message
+encrypted_message = encrypt_msg(public_lock, message)
+print(f"\nEncrypted Message: {encrypted_message}")
+
+# decrypt the message
+decrypted_message = decrypt_msg(private_keys, encrypted_message)
+print(f"\nDecrypted Message: {decrypted_message}")
 
 
 
