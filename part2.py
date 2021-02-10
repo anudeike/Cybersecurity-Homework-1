@@ -56,16 +56,18 @@ def compute_decryption_number(e, phi_N):
   # simply pick a random number = n, and multiply by e, then subtract 1
 
   # can be a random number
-  n = n
+  n = np.random.randint(100)
 
   d = (phi_N * n) - 1
 
+
   # verify that it works
   one = (e * d) % phi_N
-  print(f'should be one: {one}')
 
+  if one != 1:
+    raise ValueError("This decryption value will not work.")
 
-  return 0
+  return d
 
 # first step is to pick two prime numbers
 p = 2
@@ -79,7 +81,14 @@ phi_N = phi(p, q)
 
 # should get 5 for the example
 e = compute_encryption_number(phi_N, N)
-d = compute_decryption_number(5, 6)
+d = compute_decryption_number(e, phi_N)
+
+# set the keys
+public_lock = (e, N)
+private_keys = (d, N)
+
+print(f'public_lock: {public_lock}')
+print(f'private_key: {private_keys}')
 
 
 
