@@ -64,6 +64,7 @@ def compute_decryption_number(e, phi_N):
   # verify that it works
   one = (e * d) % phi_N
 
+  # its can't work if it doesn't have the criteria
   if one != 1:
     raise ValueError("This decryption value will not work.")
 
@@ -89,6 +90,11 @@ private_keys = (d, N)
 
 print(f'public_lock: {public_lock}')
 print(f'private_key: {private_keys}')
+
+# checking encryption and decryption
+message = "Hi! Cybersecurity is fun, especially all of the modular arthmetic!"
+
+
 
 
 
